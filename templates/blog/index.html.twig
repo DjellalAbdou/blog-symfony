@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Blog Home{% endblock %}
+{% block navbar %}
+{{ include('_navbar.html.twig', {user_role: user_role}) }}
+{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                {% for article in articles %}
+                    <div class="post-preview">
+                        <a href="{{ path('article.index',{id: article.id, slug: article.slug}) }}">
+                            <h2 class="post-title">
+                                {{ article.title }}
+                            </h2>
+                            <p class="post-subtitle">
+                                {{ article.content | u.truncate(100,'...')  | nl2br }}
+                            </p>
+                        </a>
+                        <p class="post-meta">Posted by
+                            <a href="#">Djellal Ahmed</a>
+                            on {{ article.formatedPublishedAt }}</p>
+                    </div>
+                    <hr>
+                {% endfor %}
+                <!-- Pager -->
+                <div class="navigation d-flex justify-content-end">
+                    {{ knp_pagination_render(articles) }}
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}

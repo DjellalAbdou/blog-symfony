@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Panel{% endblock %}
+{% block navbar %}
+{{ include('_navbar.html.twig', {user_role: user_role}) }}
+{% endblock %}
+{% block body %}
+<div class="container mt-4 mb-5">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Titre</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for article in articles %}
+        <tr>
+            <td>{{ article.title }}</td>
+            <td>
+                <a href="{{ path('admin.article.edit', {id: article.id}) }}"
+                   class="btn btn-secondary">Editer</a>
+                <form method="post" onsubmit="return confirm('etes vous sur de vouloir supprimer?')"
+                      action="{{ path('admin.article.delete' , {id: article.id}) }}"
+                      style="display: inline-block">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="hidden" name="_token" value="{{ csrf_token("delete" ~ article.id) }}">
+                    <button class="btn btn-danger">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="text-right">
+        <a href="{{ path('admin.article.create') }}" class="btn btn-primary">Creer un nouveau article</a>
+    </div>
+</div>
+{% endblock %}

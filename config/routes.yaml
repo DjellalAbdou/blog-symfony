@@ -1,3 +1,50 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+blog:
+  path: /
+  controller: App\Controller\BlogController::index
+
+article.index:
+  path: /article/{slug}-{id}
+  controller: App\Controller\BlogController::show
+  requirements:
+    slug: '[a-z0-9\-]*'
+
+admin.article.index:
+  path: /admin
+  controller: App\Controller\Admin\AdminArticleController::index
+
+admin.article.create:
+  path: /admin/article/create
+  controller: App\Controller\Admin\AdminArticleController::create
+
+admin.article.edit:
+  path: /admin/article/{id}
+  controller: App\Controller\Admin\AdminArticleController::edit
+  methods: GET|POST
+  requirements:
+    id: '[1-9][0-9]*'
+  # because the first element has always the id=1 and not 0 so we dont use \d
+
+admin.article.delete:
+  path: /admin/article/{id}
+  controller: App\Controller\Admin\AdminArticleController::delete
+  methods: DELETE
+
+login:
+  path: /login
+  controller: App\Controller\SecurityController::login
+
+logout:
+  path: /logout
+
+api.article.get:
+  path: /api/articles
+  controller: App\Controller\APIController::index
+  methods: GET
+
+api.article.show:
+  path: /api/show/articles
+  controller: App\Controller\APIController::show
+
