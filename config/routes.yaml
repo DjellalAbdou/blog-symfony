@@ -47,4 +47,5 @@ api.article.get:
 api.article.show:
   path: /api/show/articles
   controller: App\Controller\APIController::show
+  #methods: POST
 

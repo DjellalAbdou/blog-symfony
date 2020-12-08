@@ -7,9 +7,23 @@ use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
+ * @Serializer\XmlRoot("article")
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "article.index",
+ *          parameters = {
+ *              "id" = "expr(object.getId())",
+ *              "slug" = "expr(object.getSlug())"
+ *          },
+ *          absolute= true
+ *      )
+ * )
  */
 class Article
 {

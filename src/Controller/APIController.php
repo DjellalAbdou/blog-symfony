@@ -5,34 +5,38 @@ namespace App\Controller;
 use App\Entity\ApiLink;
 use App\Form\ApiLinkType;
 use App\Repository\ArticleRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Utils\HateoasBuilderMMP;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * Class APIController
+ * @package App\Controller
+ */
 class APIController extends AbstractController
 {
+
+    /**
+     * @var HateoasBuilderMMP
+     */
+    private $hateoas;
+
+    public function __construct(HateoasBuilderMMP $hateoasMmp)
+    {
+        $this->hateoas = $hateoasMmp->create();
+    }
+
     /**
      * @param ArticleRepository $repository
-     * @param NormalizerInterface $normalizer
      * @return Response
      */
-    public function index(ArticleRepository $repository, NormalizerInterface $normalizer): Response
+    public function index(ArticleRepository $repository):  Response
     {
         $articles = $repository->getLatestArticles();
         $json = null;
         try {
-            $normalized = $normalizer->normalize($articles);
-            $json = json_encode($normalized);
+            $json = $this->hateoas->serialize($articles,'json');
         } catch (ExceptionInterface $e) {
         }
 
@@ -41,35 +45,14 @@ class APIController extends AbstractController
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param HttpClientInterface $client
-     * @return Response
-     */
-    public function show(Request $request, HttpClientInterface $client):Response
+
+
+    public function show(): Response
     {
         $articles = null;
         $apiLink = new ApiLink();
         $form = $this->createForm(ApiLinkType::class,$apiLink);
-        $form->handleRequest($request);
-
-        try {
-        if ($form->isSubmitted() && $form->isValid()){
-            //die($apiLink->getURL());
-            $respApi = $client->request("GET",$apiLink->getURL());
-            $statusCode = $respApi->getStatusCode();
-            dump($respApi);
-            if ($statusCode == 200){
-                //$content = $respApi->getContent();
-                return $this->redirectToRoute("blog");
-            }
-
-        }
-        } catch (ClientExceptionInterface $e) {
-        } catch (RedirectionExceptionInterface $e) {
-        } catch (ServerExceptionInterface $e) {
-        } catch (TransportExceptionInterface $e) {
-        }
+        //$form->handleRequest($request);
 
         return $this->render('api/index.html.twig',[
             'articles' => $articles,

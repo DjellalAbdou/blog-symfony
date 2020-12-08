@@ -7,44 +7,66 @@
         {{ form_start(form) }}
         <div class="row d-flex justify-content-center">
             <div class="col-md-8">
-                {{ form_row(form.URL) }}
+                {{ form_row(form.URL)}}
             </div>
         </div>
+
+        {{ form_end(form) }}
         <div class="row d-flex justify-content-center">
             <div class="col-md-8 ">
-                <button class="btn btn-primary">call it!</button>
+                <button id="callAPIbtn" class="btn btn-primary">call it!</button>
             </div>
         </div>
-        {{ form_end(form) }}
-        {% if articles is not empty %}
+
         <div class="row mb-5">
-            <div class="col-lg-8 col-md-10 mx-auto">
+            <div id="articleContainer" class="col-lg-8 col-md-10 mx-auto">
 
-                {% for article in articles %}
-                    <div class="post-preview">
-                        <a href="#">
-                            <h2 class="post-title">
-                                {{ article.title }}
-                            </h2>
-                            <p class="post-subtitle">
-                                {{ article.content | u.truncate(100,'...')  | nl2br }}
-                            </p>
-                        </a>
-                        <p class="post-meta">Posted by
-                            <a href="#">Someone Else</a>
-                            on {{ article.formatedPublishedAt }}</p>
-                    </div>
-                    <hr>
-                {% endfor %}
-
-                <!-- Pager -->
-                <div class="navigation d-flex justify-content-end">
-                    {{ knp_pagination_render(articles) }}
-                </div>
             </div>
-            {% endif %}
         </div>
 
 
     </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $("#callAPIbtn").click(e => {
+            if (validURL($("#api_link_URL").val())){
+                $.get($("#api_link_URL").val(), (data, status) => {
+                    if (status !== 'success') return;
+                    console.log(data,status);
+                    data.map(elem => {
+                        $("#articleContainer").append(
+                            `<div class="post-preview">
+                            <a href="${elem._links.self.href}">
+                            <h2 class="post-title">
+
+                                ${elem.title}
+                            </h2>
+                            <p class="post-subtitle">
+
+                            ${$.trim(elem.content).substring(0, 100)
+                                .split(" ").slice(0, -1).join(" ") + "..."}
+                            </p>
+                            </a>
+                            <p class="post-meta">Posted by<a href="#">Someone Else</a>on ${elem.published_at}</p>
+                        </div>`
+                        )
+                    })
+
+                })
+            }
+
+        })
+
+        function validURL(str) {
+            let pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+                '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+            return !!pattern.test(str);
+        }
+
+    </script>
 {% endblock %}
