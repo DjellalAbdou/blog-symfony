@@ -3,7 +3,7 @@ security:
     providers:
         from_database:
             entity:
-                class: App\Entity\User
+                class: App\Entity\UserDB
                 property: username
 
         #users_in_memory: { memory: null }
@@ -35,6 +35,6 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
     encoders:
-        App\Entity\User:
+        App\Entity\UserDB:
             algorithm: bcrypt
             cost: 13

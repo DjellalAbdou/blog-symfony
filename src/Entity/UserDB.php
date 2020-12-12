@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use App\Repository\UserDBRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\Entity(repositoryClass=UserDBRepository::class)
  */
-class User implements UserInterface,\Serializable
+class UserDB implements UserInterface,\Serializable
 {
     /**
      * @ORM\Id
